@@ -27,7 +27,7 @@ namespace Lab1.Inputs
                     return GetMatrix(false, args);
                 }
             }
-            Console.Write("Загрузить матрицу из файла? (y/n): ");
+            Console.Write("Загрузить матрицу из файла/сгенерировать случайную? (y/n/r): ");
             string answ = Console.ReadLine().ToLower();
             if (answ == "y")
             {
@@ -57,7 +57,22 @@ namespace Lab1.Inputs
             try
             {
                 string[] matrix = File.ReadAllLines(fileName);
-                double[][] transformed = matrix.Select(line => line.Replace(".",",").Split().Select(double.Parse).ToArray()).ToArray();
+                double[][] transformed = MatrixUtils.MatrixCreate(matrix.Length, matrix.Length);
+                for(int i = 0; i < matrix.Length; i++)
+                {
+                    string[] splitted = matrix[i].Split();
+                    for (int j = 0; j < matrix.Length; j++)
+                    {
+                        try
+                        {
+                            transformed[i][j] = double.Parse(splitted[j].Replace(".", ","));
+                        } catch(Exception e)
+                        {
+                            Console.WriteLine($"Файл не найден, либо в нем указаны неверные данные. (Строка {i} элемент {j}: {splitted[i][j]})");
+                            return (false, null);
+                        }
+                    }
+                }
                 if(transformed.Length > 20)
                 {
                     Console.WriteLine("Размер матрицы не должен превышать 20");
@@ -69,7 +84,7 @@ namespace Lab1.Inputs
                 }
                     return (true, transformed);
             }
-            catch (Exception)
+            catch (Exception e)
             {
                 Console.WriteLine("Файл не найден, либо в нем указаны неверные данные.");
             }
